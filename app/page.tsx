@@ -65,7 +65,7 @@ export default function HomePage() {
           <a href="#integrations">Integrations</a>
           <a href="#pricing">Pricing</a>
         </div>
-        <a href="#waitlist" className="nav-cta">Join waitlist</a>
+        <a href="/login" className="nav-cta">Login</a>
       </nav>
 
       {/* HERO */}

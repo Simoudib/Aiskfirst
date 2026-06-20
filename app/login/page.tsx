@@ -20,7 +20,7 @@ export default function LoginPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push('/admin')
+      router.push('/dashboard')
     }
   }
 
@@ -35,8 +35,11 @@ export default function LoginPage() {
         borderRadius: '16px', padding: '40px',
       }}>
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--accent)', marginBottom: '8px', letterSpacing: '.1em', textTransform: 'uppercase' }}>Admin</p>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em' }}>Sign in</h1>
+          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', marginBottom: '24px' }}>
+            <img src="/logoaiskfirst.svg" alt="AskFirst" style={{ height: '28px', width: 'auto', display: 'block' }} />
+          </a>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--accent)', marginBottom: '8px', letterSpacing: '.1em', textTransform: 'uppercase' }}>Welcome back</p>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em' }}>Sign in to your account</h1>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

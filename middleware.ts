@@ -3,7 +3,10 @@ import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-  if (!request.nextUrl.pathname.startsWith('/admin')) {
+  const { pathname } = request.nextUrl
+  const isProtected = pathname.startsWith('/admin') || pathname.startsWith('/dashboard')
+
+  if (!isProtected) {
     return NextResponse.next()
   }
 
@@ -36,5 +39,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/dashboard/:path*', '/dashboard'],
 }
