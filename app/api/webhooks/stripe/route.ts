@@ -26,13 +26,15 @@ export async function POST(req: NextRequest) {
 
   switch (event.type) {
     case 'checkout.session.completed': {
-      const session = await stripe.checkout.sessions.retrieve(
-        (event.data.object as Stripe.Checkout.Session).id,
-        { expand: ['customer'] }
-      )
-      
-      const customer = session.customer as Stripe.Customer
-      const email = session.customer_email ?? customer?.email
+      // Use event.data.object directly — do NOT re-fetch via stripe.checkout.sessions.retrieve()
+      // because the new Stripe API generates session IDs > 66 chars which the library rejects.
+      const session = event.data.object as Stripe.Checkout.Session
+
+      const email =
+        session.customer_email ??
+        session.customer_details?.email ??
+        null
+
       const planKey = session.metadata?.plan ?? '1m'
       const planConfig = PLANS[planKey]
       const months = planConfig?.months ?? 1
@@ -44,9 +46,9 @@ export async function POST(req: NextRequest) {
       // Generate unique access code
       const accessCode = generateAccessCode()
 
-      await supabaseAdmin.from('subscribers').upsert(
+      const { error: dbError } = await supabaseAdmin.from('subscribers').upsert(
         {
-          email: email ? email.toLowerCase() : null,
+          email: email ? email.toLowerCase() : `unknown_${session.id.slice(-12)}@placeholder.local`,
           plan: planKey,
           paid: true,
           stripe_customer_id: session.customer as string | null,
@@ -57,6 +59,11 @@ export async function POST(req: NextRequest) {
         },
         { onConflict: 'stripe_session_id' }
       )
+
+      if (dbError) {
+        console.error('[webhook] upsert error:', dbError)
+        return NextResponse.json({ error: 'db error' }, { status: 500 })
+      }
       break
     }
 
