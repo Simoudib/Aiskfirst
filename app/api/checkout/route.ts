@@ -39,6 +39,10 @@ export async function GET(req: NextRequest) {
         utm_campaign: 'direct_link',
       },
       allow_promotion_codes: true,
+      // Ensure the customer's email is always collected and available
+      // on the session so the webhook can store it in Supabase.
+      billing_address_collection: 'required',
+      customer_creation: 'always',
     })
 
     // Redirect to Stripe with Referrer-Policy: no-referrer so the source

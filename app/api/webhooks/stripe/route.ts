@@ -26,8 +26,13 @@ export async function POST(req: NextRequest) {
 
   switch (event.type) {
     case 'checkout.session.completed': {
-      const session = event.data.object as Stripe.Checkout.Session
-      const email = session.customer_email ?? session.customer_details?.email
+      const session = await stripe.checkout.sessions.retrieve(
+        (event.data.object as Stripe.Checkout.Session).id,
+        { expand: ['customer'] }
+      )
+      
+      const customer = session.customer as Stripe.Customer
+      const email = session.customer_email ?? customer?.email
       const planKey = session.metadata?.plan ?? '1m'
       const planConfig = PLANS[planKey]
       const months = planConfig?.months ?? 1
@@ -39,21 +44,19 @@ export async function POST(req: NextRequest) {
       // Generate unique access code
       const accessCode = generateAccessCode()
 
-      if (email) {
-        await supabaseAdmin.from('subscribers').upsert(
-          {
-            email: email.toLowerCase(),
-            plan: planKey,
-            paid: true,
-            stripe_customer_id: session.customer as string | null,
-            stripe_session_id: session.id,
-            stripe_status: 'active',
-            access_until: accessUntil.toISOString(),
-            access_code: accessCode,
-          },
-          { onConflict: 'email' }
-        )
-      }
+      await supabaseAdmin.from('subscribers').upsert(
+        {
+          email: email ? email.toLowerCase() : null,
+          plan: planKey,
+          paid: true,
+          stripe_customer_id: session.customer as string | null,
+          stripe_session_id: session.id,
+          stripe_status: 'active',
+          access_until: accessUntil.toISOString(),
+          access_code: accessCode,
+        },
+        { onConflict: 'stripe_session_id' }
+      )
       break
     }
 
