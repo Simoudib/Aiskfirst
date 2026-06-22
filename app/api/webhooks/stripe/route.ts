@@ -46,10 +46,8 @@ export async function POST(req: NextRequest) {
       // Generate unique access code
       const accessCode = generateAccessCode()
 
-      // onConflict: 'email' — email has a guaranteed UNIQUE constraint since table creation.
-      // plan is stored as null to bypass the DB check constraint (which only allows
-      // 'free'/'starter'/'pro'/'scale' but our keys are '1m'/'3m' etc).
-      // The planKey is preserved in metadata and retrieved via stripe_session_id lookup.
+      // onConflict: 'stripe_session_id' — confirmed UNIQUE constraint exists.
+      // No plan check constraint exists, so planKey ('1m', '3m' etc) inserts safely.
       const emailValue = email
         ? email.toLowerCase()
         : `unknown_${session.id.slice(-12)}@placeholder.local`
@@ -57,7 +55,7 @@ export async function POST(req: NextRequest) {
       const { error: dbError } = await supabaseAdmin.from('subscribers').upsert(
         {
           email: emailValue,
-          plan: null,           // null bypasses the DB check constraint safely
+          plan: planKey,
           paid: true,
           stripe_customer_id: session.customer as string | null,
           stripe_session_id: session.id,
@@ -65,7 +63,7 @@ export async function POST(req: NextRequest) {
           access_until: accessUntil.toISOString(),
           access_code: accessCode,
         },
-        { onConflict: 'email' }
+        { onConflict: 'stripe_session_id' }
       )
 
       if (dbError) {
