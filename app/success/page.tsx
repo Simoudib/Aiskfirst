@@ -128,12 +128,30 @@ function SuccessContent() {
         {plan && <p className="success-plan-badge">{plan}</p>}
         <p className="success-subtitle">{t.subtitle}</p>
 
-        {/* Code display */}
+        {/* Code display with inline copy icon */}
         <div className="success-code-section">
           <p className="success-code-label">{t.codeLabel}</p>
           {code ? (
             <div className="success-code-box">
               <span className="success-code-text">{code}</span>
+              <button
+                id="copy-code-btn"
+                className={`success-copy-icon${copied ? ' success-copy-icon--done' : ''}`}
+                onClick={handleCopy}
+                aria-label={t.copyBtn}
+                title={t.copyBtn}
+              >
+                {copied ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                )}
+              </button>
             </div>
           ) : failed ? (
             <div className="success-code-box success-code-box--error">
@@ -144,77 +162,29 @@ function SuccessContent() {
           ) : (
             <div className="success-code-box success-code-box--loading">
               <span className="success-loading-dots">
-                <span />
-                <span />
-                <span />
+                <span /><span /><span />
               </span>
               <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginLeft: '0.75rem' }}>
                 {t.codeLoading}
               </span>
             </div>
           )}
-
-          <button
-            id="copy-code-btn"
-            className={`success-copy-btn${copied ? ' success-copy-btn--done' : ''}${!code ? ' success-copy-btn--disabled' : ''}`}
-            onClick={handleCopy}
-            disabled={!code}
-          >
-            {copied ? (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                {t.copied}
-              </>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-                {t.copyBtn}
-              </>
-            )}
-          </button>
         </div>
 
-        {/* Instructions */}
-        <div className="success-instructions">
-          <div className="success-step">
-            <div className="success-step-num">1</div>
-            <p className="success-step-text">{t.step1}</p>
-          </div>
-          <div className="success-step-arrow">→</div>
-          <div className="success-step">
-            <div className="success-step-num">2</div>
-            <p className="success-step-text">{t.step2}</p>
-          </div>
-          <div className="success-step-arrow">→</div>
-          <div className="success-step">
-            <div className="success-step-num">3</div>
-            <p className="success-step-text">{t.step3}</p>
-          </div>
-        </div>
-
-        {/* WhatsApp CTA */}
-        <div className="success-wa-section">
-          <p className="success-wa-label">{t.waLabel}</p>
-          <p className="success-wa-number">+1 (814) 956-7463</p>
-          <a
-            id="whatsapp-btn"
-            href={code ? waUrl : '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`success-wa-btn${!code ? ' success-wa-btn--disabled' : ''}`}
-            onClick={(e) => !code && e.preventDefault()}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
-            {t.waBtn}
-          </a>
-        </div>
+        {/* WhatsApp CTA — only main action */}
+        <a
+          id="whatsapp-btn"
+          href={code ? waUrl : '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`success-wa-btn${!code ? ' success-wa-btn--disabled' : ''}`}
+          onClick={(e) => !code && e.preventDefault()}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+          {t.waBtn}
+        </a>
 
         <a href="/" className="success-home-link">{t.backHome}</a>
       </div>
@@ -407,15 +377,42 @@ function SuccessContent() {
           background: rgba(99,102,241,0.08);
           border: 1.5px solid rgba(99,102,241,0.35);
           border-radius: 14px;
-          padding: 1.1rem 1.25rem;
+          padding: 1rem 1rem 1rem 1.25rem;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
+          gap: 0.75rem;
           min-height: 64px;
           transition: border-color 0.3s;
         }
         .success-code-box:hover {
           border-color: rgba(99,102,241,0.6);
+        }
+
+        /* Inline copy icon */
+        .success-copy-icon {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .success-copy-icon:hover {
+          background: rgba(255,255,255,0.12);
+          color: #fff;
+          border-color: rgba(255,255,255,0.25);
+        }
+        .success-copy-icon--done {
+          background: rgba(34,211,238,0.12);
+          border-color: rgba(34,211,238,0.4);
+          color: #22d3ee;
         }
         .success-code-box--loading {
           border-color: rgba(255,255,255,0.1);
@@ -453,102 +450,10 @@ function SuccessContent() {
           40% { transform: scale(1.1); opacity: 1; }
         }
 
-        /* Copy button */
-        .success-copy-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          color: rgba(255,255,255,0.7);
-          font-size: 0.85rem;
-          font-weight: 600;
-          font-family: 'Inter', sans-serif;
-          padding: 0.55rem 1.25rem;
-          border-radius: 999px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .success-copy-btn:hover:not(.success-copy-btn--disabled) {
-          background: rgba(255,255,255,0.1);
-          border-color: rgba(255,255,255,0.25);
-          color: #fff;
-          transform: translateY(-1px);
-        }
-        .success-copy-btn--done {
-          background: rgba(34,211,238,0.12);
-          border-color: rgba(34,211,238,0.4);
-          color: #22d3ee;
-        }
-        .success-copy-btn--disabled {
-          opacity: 0.35;
-          cursor: not-allowed;
-        }
+        /* (steps and standalone copy btn removed) */
 
-        /* Steps */
-        .success-instructions {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .success-step {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.4rem;
-          max-width: 90px;
-        }
-        .success-step-num {
-          width: 32px; height: 32px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
-          color: #fff;
-          font-size: 0.8rem;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .success-step-text {
-          color: rgba(255,255,255,0.5);
-          font-size: 0.72rem;
-          text-align: center;
-          line-height: 1.4;
-        }
-        .success-step-arrow {
-          color: rgba(255,255,255,0.2);
-          font-size: 1rem;
-          margin-bottom: 16px;
-        }
 
-        /* WhatsApp section */
-        .success-wa-section {
-          width: 100%;
-          background: rgba(37,211,102,0.06);
-          border: 1px solid rgba(37,211,102,0.2);
-          border-radius: 16px;
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-        }
-        .success-wa-label {
-          color: rgba(255,255,255,0.4);
-          font-size: 0.75rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-        .success-wa-number {
-          color: #fff;
-          font-size: 1.3rem;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          margin-bottom: 0.5rem;
-        }
+        /* WhatsApp button */
         .success-wa-btn {
           display: inline-flex;
           align-items: center;
