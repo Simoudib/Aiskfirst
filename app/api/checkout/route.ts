@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [{ price: planConfig.priceId, quantity: 1 }],
-      success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#pricing`,
       // Always attribute these shareable links to Instagram ads.
       // no-referrer header hides the real source; metadata makes
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       line_items: [{ price: planConfig.priceId, quantity: 1 }],
       customer_email: email ?? undefined,
-      success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#pricing`,
       metadata: { plan },
       allow_promotion_codes: true,

@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PLANS } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import Stripe from 'stripe'
+import crypto from 'crypto'
+
+/** Generates a cryptographically random 24-character alphanumeric code */
+function generateAccessCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const bytes = crypto.randomBytes(24)
+  return Array.from(bytes)
+    .map((b) => chars[b % chars.length])
+    .join('')
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -26,6 +36,9 @@ export async function POST(req: NextRequest) {
       const accessUntil = new Date()
       accessUntil.setMonth(accessUntil.getMonth() + months)
 
+      // Generate unique access code
+      const accessCode = generateAccessCode()
+
       if (email) {
         await supabaseAdmin.from('subscribers').upsert(
           {
@@ -33,8 +46,10 @@ export async function POST(req: NextRequest) {
             plan: planKey,
             paid: true,
             stripe_customer_id: session.customer as string | null,
+            stripe_session_id: session.id,
             stripe_status: 'active',
             access_until: accessUntil.toISOString(),
+            access_code: accessCode,
           },
           { onConflict: 'email' }
         )

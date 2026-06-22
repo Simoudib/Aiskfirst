@@ -7,11 +7,19 @@ create table if not exists public.subscribers (
   paid                    boolean not null default false,
   stripe_customer_id      text,
   stripe_subscription_id  text,
+  stripe_session_id       text unique,
   stripe_status           text,
+  access_code             text unique,
+  access_until            timestamptz,
   source                  text,
   created_at              timestamptz not null default now(),
   updated_at              timestamptz not null default now()
 );
+
+-- Run these if the table already exists:
+-- ALTER TABLE public.subscribers ADD COLUMN IF NOT EXISTS stripe_session_id TEXT UNIQUE;
+-- ALTER TABLE public.subscribers ADD COLUMN IF NOT EXISTS access_code TEXT UNIQUE;
+-- ALTER TABLE public.subscribers ADD COLUMN IF NOT EXISTS access_until TIMESTAMPTZ;
 
 -- Auto-update updated_at on row change
 create or replace function public.handle_updated_at()
